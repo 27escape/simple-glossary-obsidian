@@ -34,6 +34,14 @@ function sgMarkDom(root, matcher, opts = {}) {
     if (at < text.length) frag.appendChild(doc.createTextNode(text.slice(at)));
     node.parentNode.replaceChild(frag, node);
   }
+  // links whose text (or target) is a term get the tooltip too; the link itself still works when clicked
+  for (const a of root.querySelectorAll('a.internal-link, a.external-link')) {
+    if (a.closest('code, pre, .sg-term') || a.classList.contains('sg-term')) continue;
+    const entry = matcher.entryOf(a.textContent.trim()) || matcher.entryOf((a.getAttribute('data-href') || '').split(/[#^]/)[0].trim());
+    if (!entry) continue;
+    a.classList.add('sg-term', 'sg-link');
+    a.setAttribute('data-sg-term', entry.term);
+  }
 }
 
 Object.assign(SimpleGlossaryPlugin.prototype, {

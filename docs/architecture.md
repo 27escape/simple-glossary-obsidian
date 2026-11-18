@@ -24,6 +24,9 @@ Both views put the same `span.sg-term[data-sg-term]` around each match, so the t
 
 When the terms or a matching setting change, `refreshViews()` sends `sgRefresh` to every open editor and re-renders every Reading view.
 
+## Links
+`linkTerms` (editor) and the end of `sgMarkDom` (Reading view) mark links whose shown text, or wikilink target, is a term, such as `[[SYMCA]]` or `[[Other|AR]]`. They carry the extra class `sg-link`, are marked every time ("first use only" doesn't apply), and keep the link's own click: the click handlers ignore `.sg-link`.
+
 ## Tooltip and clicks
 `watchDocument` adds listeners at document level, for the main window and each pop-out window: `mouseover`, `mouseout`, `mousedown` (capture), `click`, `keydown` (Esc) and `scroll`. Only one tooltip exists at a time. It is attached to `body`, positioned with `setCssStyles` below the term (or above it when there's no room) and built with DOM calls. It stays open while the pointer is over it. Web links open through `window.open`, which Obsidian passes to the system browser. *Open in glossary* goes to the entry's line using the `line` ephemeral state. If the glossary is already open in a tab, that tab is reused; otherwise it opens in a new tab.
 

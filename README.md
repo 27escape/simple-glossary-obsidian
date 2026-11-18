@@ -28,7 +28,8 @@ Each entry is a list item. Any of these forms works:
 - A term only matches as a whole word: `AR` matches "AR", "AR-based" and "(AR)", but not "ARM" or "CAR".
 - Terms that contain symbols, such as `CI/CD`, match as written.
 - Simple plurals count too, so `BA` also matches "BAs" and "BA's".
-- Nothing is marked in code, links, tags, web addresses, headings, frontmatter, comments or maths, or in the glossary note itself.
+- A link whose text is a term, such as `[[SYMCA]]`, gets the tooltip every time; clicking it still follows the link.
+- Nothing else is marked in code, links, tags, web addresses, headings, frontmatter, comments or maths, or in the glossary note itself.
 - **Hover** over a marked term to see what it means. The tooltip stays open while your pointer is over it, so you can click its links.
 - **Click** a term in Reading view to open the glossary at that entry. While editing, Ctrl-click it (Cmd-click on a Mac), or use *Open in glossary* in the tooltip.
 

@@ -1,5 +1,6 @@
 // Clicking a term opens the glossary note at its entry.
 // Reading view: a plain click. Editor: Ctrl-click (Cmd-click on a Mac), since a plain click there places the cursor.
+// Terms that are links (.sg-link) keep the link's own click; the tooltip's "Open in glossary" still works.
 
 Object.assign(SimpleGlossaryPlugin.prototype, {
   termAt(evt) {
@@ -9,7 +10,7 @@ Object.assign(SimpleGlossaryPlugin.prototype, {
 
   onMouseDown(evt) {
     const term = this.termAt(evt);
-    if (!term || evt.button !== 0 || !term.closest('.cm-editor') || !Keymap.isModEvent(evt)) return;
+    if (!term || evt.button !== 0 || term.classList.contains('sg-link') || !term.closest('.cm-editor') || !Keymap.isModEvent(evt)) return;
     evt.preventDefault(); // stop CodeMirror adding a cursor
     evt.stopPropagation();
     const entry = this.entryFor(term.getAttribute('data-sg-term'));
@@ -18,7 +19,7 @@ Object.assign(SimpleGlossaryPlugin.prototype, {
 
   onClick(evt) {
     const term = this.termAt(evt);
-    if (!term || evt.button !== 0 || term.closest('.cm-editor')) return;
+    if (!term || evt.button !== 0 || term.classList.contains('sg-link') || term.closest('.cm-editor')) return;
     const entry = this.entryFor(term.getAttribute('data-sg-term'));
     if (!entry) return;
     evt.preventDefault();

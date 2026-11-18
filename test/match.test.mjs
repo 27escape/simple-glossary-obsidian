@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { load } from './load.mjs';
 
-const { buildMatcher, findTerms, skipRanges, firstLines } = load(['buildMatcher', 'findTerms', 'skipRanges', 'firstLines']);
+const { buildMatcher, findTerms, skipRanges, firstLines, linkTerms } = load(['buildMatcher', 'findTerms', 'skipRanges', 'firstLines', 'linkTerms']);
 
 const entries = ['AR', 'AI', 'AIUI', 'BA', 'CI/CD', 'C++'].map((term, line) => ({ term, def: '', line }));
 const m = buildMatcher(entries);
@@ -81,4 +81,32 @@ test('firstLines gives the line of each first use', () => {
   const lines = firstLines(text, m);
   assert.equal(lines.get('BA'), 1);
   assert.equal(lines.get('AR'), 3);
+});
+
+// bug: "[[SYMCA]]" in a note was never marked, because links are skipped
+test('links to a term are marked on the text they show', () => {
+  const text = 'see [[AR]], [[AR#Uses|AR]], [[Other|BA]], [BA](x.md), [[ARM]], ![[AR]], `[[AR]]`';
+  const shown = (h) => text.slice(h.from, h.to);
+  const hits = linkTerms(text, m);
+  assert.deepEqual(
+    hits.map((h) => [shown(h), h.term]),
+    [
+      ['AR', 'AR'],
+      ['AR', 'AR'],
+      ['BA', 'BA'],
+      ['BA', 'BA'],
+    ]
+  );
+});
+
+test('a link uses its target when its text is not a term', () => {
+  const text = '[[AR|augmented reality]]';
+  const hits = linkTerms(text, m);
+  assert.equal(hits.length, 1);
+  assert.equal(text.slice(hits[0].from, hits[0].to), 'augmented reality');
+});
+
+test('skipRanges can leave links out', () => {
+  assert.equal(skipRanges('[[AR]] and [a](b)').length, 2);
+  assert.equal(skipRanges('[[AR]] and [a](b)', { links: false }).length, 0);
 });
