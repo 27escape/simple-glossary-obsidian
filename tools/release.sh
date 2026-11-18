@@ -10,7 +10,8 @@
 #   --yes       don't ask before changing the version, tagging or pushing
 #   --no-push   stop after tagging (to push later, run it again without --no-push)
 #
-# Needs docs/release-notes/VERSION.md (its text becomes the GitHub release notes) and a GitHub remote "origin".
+# Needs docs/release-notes/VERSION.md (its text becomes the GitHub release notes) and a GitHub remote "origin"
+# (tools/setup-repo.sh sets that up).
 #   1. checks: a clean working tree, the release notes, the unit tests, the build and tools/check.mjs
 #   2. the version in the manifest and versions.json (only when VERSION differs)
 #   3. the sample vault's copy of the plugin, committed if it is tracked and changed
@@ -23,7 +24,7 @@
 # Safe to run again: steps already done (version set, tag on this commit, release made) are skipped.
 set -euo pipefail
 
-cd "$(git rev-parse --show-toplevel)"
+cd "$(dirname "$0")/.."
 
 DRY=0
 YES=0
@@ -39,6 +40,8 @@ for a in "$@"; do
     *) VERSION="$a" ;;
   esac
 done
+
+[ -d .git ] || { echo "Stopped: not a git repo yet: run tools/setup-repo.sh first" >&2; exit 1; }
 
 say() { printf '\n== %s\n' "$*"; }
 fail() { printf '\nStopped: %s\n' "$*" >&2; exit 1; }
@@ -73,7 +76,7 @@ say "Checks"
 [ "$BRANCH" != HEAD ] || fail "not on a branch"
 [ -z "$(git status --porcelain)" ] || { git status --short; fail "the working tree has changes: commit or stash them first"; }
 [ -f "$NOTES" ] || fail "no release notes: write $NOTES first"
-git remote get-url origin >/dev/null 2>&1 || fail "no GitHub remote: make the repo on GitHub, then: git remote add origin https://github.com/<you>/$ID.git"
+git remote get-url origin >/dev/null 2>&1 || fail "no GitHub remote: run tools/setup-repo.sh first"
 if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
   # a run that stopped after tagging can carry on; a tag on another commit means this version is out already
   TAGGED=$(git rev-list -n 1 "$VERSION")

@@ -59,4 +59,4 @@ Simple Glossary reads your notes and never changes them. It makes no network req
 
 ## Building
 
-There are no dependencies and no bundler. `node tools/build.mjs` joins the files in `src/` into `dist/simple-glossary/`. To try a build, copy `main.js`, `manifest.json` and `styles.css` into `<vault>/.obsidian/plugins/simple-glossary/`, or open the `sample vault` folder in Obsidian. See `CLAUDE.md` for the developer notes.
+There are no dependencies and no bundler. `node tools/build.mjs` joins the files in `src/` into `dist/simple-glossary/`. To try a build, copy `main.js`, `manifest.json` and `styles.css` into `<vault>/.obsidian/plugins/simple-glossary/`, or open the `sample vault` folder in Obsidian. To put it on GitHub, run `tools/setup-repo.sh`. To release a version, run `tools/release.sh` (`--help` for each). See `CLAUDE.md` for the developer notes.
