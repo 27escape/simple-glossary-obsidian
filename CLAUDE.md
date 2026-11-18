@@ -18,6 +18,7 @@ Obsidian plugin, desktop only: reads a glossary note, marks its terms in other n
 - `node tools/build.mjs` → `dist/simple-glossary/{main.js,styles.css,manifest.json}`, the manifest copied to the repo root, and a copy in `sample vault/.obsidian/plugins/simple-glossary/`.
 - `node --test test/*.test.mjs` runs the unit tests (real source files, a small Obsidian/CodeMirror stand-in in `test/load.mjs`).
 - `node tools/check.mjs`: no network, eval, shell, notifications, HTML strings or note writes in the build; every src file listed; file sizes; desktop only.
+- `tools/release.sh [X.Y.Z] [--dry-run]` releases a version: checks, version bump, build, main fast-forwarded, tag, push; GitHub Actions (`.github/workflows/release.yml`) then drafts the release, which the script publishes. Needs `docs/release-notes/X.Y.Z.md` and a GitHub remote `origin` (`--help` for the steps). Adapted from Neon Work's script.
 - To try it: open `sample vault` in Obsidian (the glossary path is already set), or copy the three built files into a vault's `.obsidian/plugins/simple-glossary/` and switch the plugin off and on.
 
 ## Rules
