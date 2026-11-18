@@ -2,6 +2,8 @@
 
 An Obsidian plugin that reads your glossary note and marks those terms wherever they appear in your other notes. When you hover over a marked term, a tooltip explains it. It works on desktop only.
 
+![Hovering over LLM in a note shows its meaning, its Wikipedia link and an Open in glossary link](docs/images/glossary-tooltip.png)
+
 ## The glossary note
 
 Each entry is a list item. Any of these forms works:
@@ -14,6 +16,10 @@ Each entry is a list item. Any of these forms works:
 - [[RAG]]: Retrieval augmented generation
 1. KPI: Key performance indicator
 ```
+
+Here is a glossary note in Reading view:
+
+![A glossary note listing LLM, RAG, SLA, KPI, GDPR and MVP in different formats](docs/images/glossary.png)
 
 - The term is the bold text, the link text or the text before the colon.
 - Everything after it is the explanation. Hashtags are removed from it, so you can still tag entries.
