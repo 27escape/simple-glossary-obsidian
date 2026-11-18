@@ -1,0 +1,17 @@
+{
+  "header": "src/_header.js",
+  "manifest": "src/manifest.json",
+  "main": "SimpleGlossaryPlugin",
+  "js": [
+    "src/imports.js",
+    "src/parse.js",
+    "src/match.js",
+    "src/plugin.js",
+    "src/reading.js",
+    "src/editor.js",
+    "src/tooltip.js",
+    "src/open.js",
+    "src/settings.js"
+  ],
+  "css": ["src/styles.css"]
+}

@@ -1,0 +1,80 @@
+/* Marked terms: the look comes from a class on <body> (setting "Look") */
+.sg-term {
+  cursor: help;
+  border-radius: var(--radius-s);
+}
+
+body.sg-look-underline .sg-term,
+body.sg-look-both .sg-term {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--text-accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+body.sg-look-highlight .sg-term,
+body.sg-look-both .sg-term {
+  background-color: color-mix(in srgb, var(--interactive-accent) 16%, transparent);
+}
+
+/* Reading view: a click opens the glossary */
+.markdown-rendered .sg-term {
+  cursor: pointer;
+}
+
+/* The tooltip */
+.sg-tooltip {
+  position: fixed;
+  z-index: var(--layer-popover);
+  max-width: 360px;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: var(--size-4-2) var(--size-4-3);
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-s);
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  line-height: var(--line-height-tight);
+}
+
+.sg-tooltip-term {
+  font-weight: var(--font-bold);
+}
+
+.sg-tooltip-def {
+  margin-top: var(--size-2-1);
+  color: var(--text-muted);
+}
+
+.sg-tooltip-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4-1) var(--size-4-3);
+  margin-top: var(--size-4-2);
+  font-size: var(--font-ui-smaller);
+}
+
+.sg-tooltip-links a {
+  color: var(--text-accent);
+  text-decoration: none;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.sg-tooltip-links a:hover {
+  text-decoration: underline;
+}
+
+/* Settings */
+.sg-suggest-path {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
+.sg-status {
+  margin-top: var(--size-4-1);
+  color: var(--text-accent);
+}
