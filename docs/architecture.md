@@ -30,5 +30,15 @@ When the terms or a matching setting change, `refreshViews()` sends `sgRefresh` 
 ## Tooltip and clicks
 `watchDocument` adds listeners at document level, for the main window and each pop-out window: `mouseover`, `mouseout`, `mousedown` (capture), `click`, `keydown` (Esc) and `scroll`. Only one tooltip exists at a time. It is attached to `body`, positioned with `setCssStyles` below the term (or above it when there's no room) and built with DOM calls. It stays open while the pointer is over it. Web links open through `window.open`, which Obsidian passes to the system browser. *Open in glossary* goes to the entry's line using the `line` ephemeral state. If the glossary is already open in a tab, that tab is reused; otherwise it opens in a new tab.
 
+## Adding a term
+`add-term.js` holds the *Add to glossary* window (`SgAddTermModal`) and `addTerm`. This is the only code that writes a note, and `tools/check.mjs` enforces that. The write happens through `vault.process`, which reads and writes in one step, or `vault.create` if the glossary doesn't exist yet. The text change itself is `sgAddEntry` in `glossary-edit.js`, which is plain text in and text out so it can be unit tested:
+
+- `sgEntryRuns` groups the entries into runs. A block is an entry's line plus the more-indented lines under it, and a run is a set of blocks one after another at the same indent.
+- The new entry joins the longest run.
+- Each run is sorted by term (`Intl.Collator`, numeric, ignoring case).
+- `sgRestyle` gives each run the list marker most of its items use, and renumbers numbered lists.
+
+`sgCheckEntry` refuses a duplicate term (of any case), an empty term or description, and Markdown characters in the term.
+
 ## Settings
 `data.json` holds `glossaryPath`, `inReading`, `inEditor`, `firstOnly`, `caseSensitive`, `plurals`, `look` and `hoverDelay`. *Look* is a class on `body` (`sg-look-underline`, `sg-look-highlight` or `sg-look-both`), so changing it needs no re-render. The glossary path field uses `AbstractInputSuggest` to list matching notes as you type.

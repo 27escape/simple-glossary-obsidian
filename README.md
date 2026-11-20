@@ -39,6 +39,16 @@ Here is a glossary note in Reading view:
 - **Hover** over a marked term to see what it means. The tooltip stays open while your pointer is over it, so you can click its links.
 - **Click** a term in Reading view to open the glossary at that entry. While editing, Ctrl-click it (Cmd-click on a Mac), or use *Open in glossary* in the tooltip.
 
+## Adding a term
+
+Run **Add a term to the glossary** from the command palette. To give it a hotkey, go to Settings → Hotkeys. A small window opens with a box for the term and a box for what it means:
+
+- **Enter** saves and **Escape** cancels.
+- If you had text selected in a note, it's filled in as the term.
+- If the term is already in the glossary, the window tells you and doesn't save it.
+
+The entry is added as `- **TERM**: what it means` to the glossary's list. That list is then sorted A–Z by the term alone, ignoring bold, links and upper or lower case. If your glossary has more than one list, for example under separate headings, each list is sorted on its own and the new term goes into the longest one. Lines indented under an entry move with it. Each list ends up with a single bullet style, and numbered lists are renumbered. If the glossary note doesn't exist yet, it is created.
+
 ## Settings
 
 | Setting | What it does |
@@ -51,11 +61,11 @@ Here is a glossary note in Reading view:
 | Look | Dotted underline, soft highlight, or both. |
 | Hover delay | How long to hover before the tooltip appears. |
 
-Commands: **Reload glossary** and **Open glossary note**.
+Commands: **Add a term to the glossary**, **Reload glossary** and **Open glossary note**.
 
 ## Privacy
 
-Simple Glossary reads your notes and never changes them. It makes no network requests. The only file it writes is its own settings file.
+Simple Glossary only reads your notes. It writes to just one: the glossary note, and only when you save a new term. It makes no network requests. The only other file it writes is its own settings file.
 
 ## Building
 

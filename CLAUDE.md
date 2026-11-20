@@ -12,6 +12,7 @@ Obsidian plugin, desktop only: reads a glossary note, marks its terms in other n
 - `src/parse.js`: glossary note → entries `{ term, def, url, tags, line }`.
 - `src/match.js`: the matcher (whole words, plurals, case), `findTerms`, `skipRanges` (parts of Markdown that aren't prose), `firstLines`.
 - `src/plugin.js`: the Plugin class (settings, loading the glossary, refreshing views, window events). `reading.js`, `open.js` add methods with `Object.assign(SimpleGlossaryPlugin.prototype, { ... })`.
+- `src/glossary-edit.js`: adding an entry to the glossary text and sorting its lists (pure, tested); `src/add-term.js`: the *Add to glossary* window and the write.
 - `src/reading.js` (Reading view post-processor), `src/editor.js` (CodeMirror extension), `src/tooltip.js`, `src/open.js` (click → glossary), `src/settings.js` (settings page, note suggestions), `src/styles.css`.
 
 ## Build and test
@@ -23,10 +24,10 @@ Obsidian plugin, desktop only: reads a glossary note, marks its terms in other n
 - To try it: open `sample vault` in Obsidian (the glossary path is already set), or copy the three built files into a vault's `.obsidian/plugins/simple-glossary/` and switch the plugin off and on.
 
 ## Rules
-- **Never change the user's notes.** The plugin only reads; its only file is its own `data.json`.
+- **Never change the user's notes** except the glossary, and only when the user saves a term in the *Add to glossary* window: all writing stays in `src/add-term.js` (`tools/check.mjs` enforces it), through `vault.process`. Otherwise the plugin only reads; its other file is its own `data.json`.
 - 100% local: no network, no system notifications, no `child_process`, no `eval`, no `innerHTML` with data.
 - Desktop only: `isDesktopOnly` in the manifest and the `Platform.isMobile` guard in `onload`.
 - Keep settings keys and command ids; migrate saved settings on load when a default changes.
 - Use British English in UI text and docs.
 - Files: one job each, target under 400 lines (soft cap 500). New feature = new file + entry in `tools/files.json` + `node tools/map.mjs`.
-- Every bug fixed gets a unit test or a check. Commits end with the attribution lines; the author is Kevin Mulholland <kevin@27escape.com>.
+- Every bug fixed gets a unit test or a check. Commits have no Claude attribution lines (no "Co-Authored-By: Claude", no "Claude-Session"); the author is Kevin Mulholland <kevin@27escape.com>.

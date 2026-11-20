@@ -5,12 +5,14 @@
   "js": [
     "src/imports.js",
     "src/parse.js",
+    "src/glossary-edit.js",
     "src/match.js",
     "src/plugin.js",
     "src/reading.js",
     "src/editor.js",
     "src/tooltip.js",
     "src/open.js",
+    "src/add-term.js",
     "src/settings.js"
   ],
   "css": ["src/styles.css"]

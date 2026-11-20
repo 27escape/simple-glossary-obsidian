@@ -48,6 +48,7 @@ class SimpleGlossaryPlugin extends Plugin {
     );
     this.registerEvent(this.app.workspace.on('active-leaf-change', () => this.tooltip.hide()));
 
+    this.addCommand({ id: 'add-term', name: 'Add a term to the glossary', callback: () => this.openAddTerm() });
     this.addCommand({ id: 'reload-glossary', name: 'Reload glossary', callback: () => this.reload() });
     this.addCommand({
       id: 'open-glossary',

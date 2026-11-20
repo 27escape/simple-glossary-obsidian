@@ -1,5 +1,6 @@
 // Checks the rules in CLAUDE.md that a test can't: node tools/check.mjs   (run after the build)
 // - the built main.js has no network, eval, shell, notifications or HTML strings
+// - only src/add-term.js writes notes (the glossary, when you add a term)
 // - every src/*.js file is in tools/files.json, and no file is too long
 // - the manifest says desktop only
 import fs from 'node:fs';
@@ -19,9 +20,15 @@ else {
     [/child_process|require\(['"](fs|path|os|electron)['"]\)/, 'shell or file system access'],
     [/new Notification\b/, 'system notification'],
     [/\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML/, 'HTML strings'],
-    [/\b(vault\.(modify|create|delete|rename|append|process)|fileManager\.)/, 'writes to notes'],
   ];
   for (const [re, what] of banned) if (re.test(code)) problems.push(`main.js: ${what} (${code.match(re)[0]})`);
+}
+
+const WRITES = /\b(vault\.(modify|create|createFolder|delete|trash|rename|append|process|copy)|fileManager\.)/;
+const MAY_WRITE = new Set(['src/add-term.js']);
+for (const f of o.js) {
+  const m = fs.readFileSync(f, 'utf8').match(WRITES);
+  if (m && !MAY_WRITE.has(f)) problems.push(`${f}: writes to notes (${m[0]}); only ${[...MAY_WRITE].join(', ')} may`);
 }
 
 const listed = new Set([o.header, ...o.js]);

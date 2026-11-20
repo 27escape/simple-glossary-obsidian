@@ -78,3 +78,25 @@ body.sg-look-both .sg-term {
   margin-top: var(--size-4-1);
   color: var(--text-accent);
 }
+
+/* "Add to glossary" window */
+.sg-add-row {
+  display: flex;
+  gap: var(--size-4-2);
+}
+
+.sg-add-row .sg-add-term {
+  flex: 0 0 9em;
+}
+
+.sg-add-row .sg-add-def {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sg-add-message {
+  min-height: 1.5em;
+  margin-top: var(--size-4-2);
+  color: var(--text-error);
+  font-size: var(--font-ui-small);
+}
