@@ -57,7 +57,9 @@ function sgRestyle(blockLines, original, indentStr) {
 /** Problem with a new term or description, or ''. */
 function sgCheckEntry(term, def, entries) {
   if (!term) return 'Enter the term.';
-  if (/[:*`[\]#|]/.test(term)) return 'A term can\'t contain : * ` [ ] # or |.';
+  // the characters the plain "TERM: def" form can't hold (see SG_FORMATS in parse.js)
+  if (/[:*_`[\]#|<>]/.test(term)) return 'A term can\'t contain : * _ ` [ ] # | < or >.';
+  if (term.length > 40) return 'A term can be 40 characters at most.';
   const dup = (entries || []).find((e) => e.term.toLowerCase() === term.toLowerCase());
   if (dup) return `${dup.term} is already in the glossary${dup.def ? `: ${dup.def}` : ''}.`;
   if (!def) return 'Enter what it means.';
@@ -65,7 +67,7 @@ function sgCheckEntry(term, def, entries) {
 }
 
 /**
- * The glossary text with "**term**: def" added and every run of entries sorted → { text } or { error }.
+ * The glossary text with "term: def" added and every run of entries sorted → { text } or { error }.
  * The new entry joins the longest run (the last, if two are as long); with no entries yet, a list starts at the end.
  */
 function sgAddEntry(text, term, def) {
@@ -77,7 +79,7 @@ function sgAddEntry(text, term, def) {
   if (problem) return { error: problem };
   const eol = text.includes('\r\n') ? '\r\n' : '\n';
   const lines = text.split(/\r?\n/);
-  const entry = `**${term}**: ${def}`;
+  const entry = `${term}: ${def}`; // plain, the simplest form parseGlossary reads
   const runs = sgEntryRuns(lines, entries);
   if (!runs.length) {
     while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
