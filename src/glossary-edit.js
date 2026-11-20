@@ -54,25 +54,31 @@ function sgRestyle(blockLines, original, indentStr) {
   });
 }
 
-/** Problem with a new term or description, or ''. */
+/** A term as typed, without the ^ that makes it match in any case. */
+function sgBareTerm(term) {
+  return String(term || '').replace(/^\^\s*/, '');
+}
+
+/** Problem with a new term (may start with ^) or description, or ''. */
 function sgCheckEntry(term, def, entries) {
-  if (!term) return 'Enter the term.';
+  const bare = sgBareTerm(term);
+  if (!bare) return 'Enter the term.';
   // the characters the plain "TERM: def" form can't hold (see SG_FORMATS in parse.js)
-  if (/[:*_`[\]#|<>]/.test(term)) return 'A term can\'t contain : * _ ` [ ] # | < or >.';
-  if (term.length > 40) return 'A term can be 40 characters at most.';
-  const dup = (entries || []).find((e) => e.term.toLowerCase() === term.toLowerCase());
+  if (/[:*_`[\]#|<>^]/.test(bare)) return 'A term can\'t contain : * _ ` [ ] # | < or >, or a ^ other than at the start.';
+  if (bare.length + (bare === term ? 0 : 1) > 40) return 'A term can be 40 characters at most.';
+  const dup = (entries || []).find((e) => e.term.toLowerCase() === bare.toLowerCase());
   if (dup) return `${dup.term} is already in the glossary${dup.def ? `: ${dup.def}` : ''}.`;
   if (!def) return 'Enter what it means.';
   return '';
 }
 
 /**
- * The glossary text with "term: def" added and every run of entries sorted → { text } or { error }.
+ * The glossary text with "term: def" added (term may start with ^: any case) and every run of entries sorted → { text } or { error }.
  * The new entry joins the longest run (the last, if two are as long); with no entries yet, a list starts at the end.
  */
 function sgAddEntry(text, term, def) {
   text = String(text || '');
-  term = String(term || '').replace(/\s+/g, ' ').trim();
+  term = String(term || '').replace(/\s+/g, ' ').trim().replace(/^\^\s*/, '^');
   def = String(def || '').replace(/\s+/g, ' ').trim();
   const entries = parseGlossary(text);
   const problem = sgCheckEntry(term, def, entries);
@@ -88,7 +94,7 @@ function sgAddEntry(text, term, def) {
     return { text: lines.join(eol) };
   }
   const target = runs.reduce((a, r) => (r.blocks.length >= a.blocks.length ? r : a));
-  target.blocks.push({ lines: [entry], term });
+  target.blocks.push({ lines: [entry], term: sgBareTerm(term) }); // ^socitm sorts under S
   for (const r of runs.slice().reverse()) {
     // from the last run back, so earlier line numbers stay right
     const original = r.blocks.map((b) => b.lines || lines.slice(b.start, b.end));

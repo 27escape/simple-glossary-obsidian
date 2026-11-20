@@ -7,22 +7,39 @@ function sgEscape(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/** A term as a pattern that matches it in any case, letter by letter ("ab" → "[aA][bB]"). */
+function sgAnyCase(term) {
+  return [...term]
+    .map((ch) => {
+      const l = ch.toLowerCase();
+      const u = ch.toUpperCase();
+      return l !== u && l.length === 1 && u.length === 1 ? `[${sgEscape(l)}${sgEscape(u)}]` : sgEscape(ch);
+    })
+    .join('');
+}
+
 /**
  * entries → { re, entryOf(text) } or null when there are no terms.
  * opts.caseSensitive (default true), opts.plurals (default true: "BAs", "AR's").
+ * Entries with anyCase (written ^term in the glossary) match in any case even when caseSensitive is on;
+ * text that matches a term exactly as written gets that entry first ("Socitm" before "^socitm").
  */
 function buildMatcher(entries, opts = {}) {
   const cs = opts.caseSensitive !== false;
-  const byKey = new Map();
+  const exact = new Map(); // term → entry, matched as written
+  const loose = new Map(); // lower-case term → entry, matched in any case
   for (const e of entries || []) {
-    const k = cs ? e.term : e.term.toLowerCase();
-    if (e.term && !byKey.has(k)) byKey.set(k, e);
+    if (!e.term) continue;
+    if (cs && !e.anyCase) {
+      if (!exact.has(e.term)) exact.set(e.term, e);
+    } else if (!loose.has(e.term.toLowerCase())) loose.set(e.term.toLowerCase(), e);
   }
-  if (!byKey.size) return null;
-  const terms = [...byKey.values()].map((e) => e.term).sort((a, b) => b.length - a.length);
+  if (!exact.size && !loose.size) return null;
+  const pats = [...exact.keys()].map((t) => [t.length, sgEscape(t)]).concat([...loose.values()].map((e) => [e.term.length, cs ? sgAnyCase(e.term) : sgEscape(e.term)]));
+  pats.sort((a, b) => b[0] - a[0]); // longest first, so "AIUI" wins over "AI"
   const plural = opts.plurals === false ? '()' : "(s|'s|’s)?";
-  const re = new RegExp(`(?<!${SG_WORD})(${terms.map(sgEscape).join('|')})${plural}(?!${SG_WORD})`, cs ? 'gu' : 'giu');
-  return { re, entryOf: (t) => byKey.get(cs ? t : t.toLowerCase()) || null };
+  const re = new RegExp(`(?<!${SG_WORD})(${pats.map((x) => x[1]).join('|')})${plural}(?!${SG_WORD})`, cs ? 'gu' : 'giu');
+  return { re, entryOf: (t) => exact.get(t) || loose.get(t.toLowerCase()) || null };
 }
 
 /**

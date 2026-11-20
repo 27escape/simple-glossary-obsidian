@@ -1,8 +1,9 @@
-// Read a glossary note into entries: { term, def, url, tags, line }.
+// Read a glossary note into entries: { term, def, url, tags, line, anyCase }.
 // An entry is a list item (-, *, + or 1.) in one of these forms:
 //   **TERM**: definition    __TERM__: definition    [TERM](https://…) definition
 //   [[TERM]]: definition    TERM: definition
-// Hashtags are taken out of the definition (kept in tags); the first URL is kept in url.
+// A term starting with ^ (such as ^socitm or **^socitm**) matches in any case: the ^ is dropped from term
+// and anyCase is set. Hashtags are taken out of the definition (kept in tags); the first URL is kept in url.
 // line is the 0-based line of the entry, used to open the glossary at that entry.
 
 const SG_LIST_ITEM = /^\s*(?:[-*+]|\d+[.)])\s+(?!\[[ xX]\]\s)(.*)$/;
@@ -59,11 +60,13 @@ function parseGlossary(text) {
     for (const fmt of SG_FORMATS) {
       const m = body.match(fmt.re);
       if (!m) continue;
-      const term = m[fmt.term].replace(/[\s:]+$/, '').trim();
+      let term = m[fmt.term].replace(/[\s:]+$/, '').trim();
+      const anyCase = term.startsWith('^');
+      if (anyCase) term = term.slice(1).trim();
       if (!term || seen.has(term)) break;
       const c = sgCleanDef(m[fmt.rest]);
       const link = fmt.url && /^https?:\/\//.test(m[fmt.url]) ? m[fmt.url] : '';
-      out.push({ term, def: c.def, url: link || c.url, tags: c.tags, line: i });
+      out.push({ term, def: c.def, url: link || c.url, tags: c.tags, line: i, anyCase });
       seen.add(term);
       break;
     }

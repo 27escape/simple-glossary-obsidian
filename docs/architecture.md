@@ -14,7 +14,7 @@ flowchart LR
 ```
 
 ## Loading
-`SimpleGlossaryPlugin.reload()` reads the glossary note with `vault.cachedRead`. `parseGlossary` turns it into entries, and `buildMatcher` makes one regular expression from all the terms, longest first. The expression only matches a term when there is no letter, digit or underscore either side of it, and it can include an optional plural ending. The plugin reloads when the glossary note is saved, created, deleted or renamed. A rename updates the saved path.
+`SimpleGlossaryPlugin.reload()` reads the glossary note with `vault.cachedRead`. `parseGlossary` turns it into entries, and `buildMatcher` makes one regular expression from all the terms, longest first. The expression only matches a term when there is no letter, digit or underscore either side of it, and it can include an optional plural ending. A term written `^term` in the glossary has `anyCase` set. With *Match case* on, `sgAnyCase` writes it into the expression letter by letter (`[sS][oO]…`), so it matches in any case while the other terms still match exactly. `entryOf` looks for an exact match first, then for an any-case one. The plugin reloads when the glossary note is saved, created, deleted or renamed. A rename updates the saved path.
 
 ## Marking
 Both views put the same `span.sg-term[data-sg-term]` around each match, so the tooltip and click handling don't need to know which view a term is in.

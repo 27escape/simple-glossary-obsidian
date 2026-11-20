@@ -90,3 +90,15 @@ test('new entries are plain "TERM: def" and read back with the same term', () =>
     assert.deepEqual([e.length, e[0].term, e[0].def], [1, term, 'what it means'], term);
   }
 });
+
+test('a ^ term is written with its ^, sorted without it, and checked for duplicates without it', () => {
+  assert.deepEqual(add(['- RAID: risks', '- TA: Technical Architect'], '^ socitm', 'Society for Innovation'), ['- RAID: risks', '- ^socitm: Society for Innovation', '- TA: Technical Architect']);
+  assert.equal(add(['- Socitm: Society'], '^socitm', 'x').error, 'Socitm is already in the glossary: Society.');
+  assert.equal(add(['- ^socitm: Society'], 'SOCITM', 'x').error, 'socitm is already in the glossary: Society.');
+  assert.equal(sgCheckEntry('^', 'x', []), 'Enter the term.');
+  assert.match(sgCheckEntry('A^B', 'x', []), /can't contain/);
+  assert.equal(sgCheckEntry('^' + 'x'.repeat(40), 'y', []), 'A term can be 40 characters at most.');
+  const { parseGlossary } = load(['parseGlossary']);
+  const e = parseGlossary(sgAddEntry('', '^' + 'x'.repeat(39), 'y').text);
+  assert.deepEqual([e[0].term.length, e[0].anyCase], [39, true]);
+});

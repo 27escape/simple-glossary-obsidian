@@ -16,6 +16,7 @@ class SgAddTermModal extends Modal {
     const row = contentEl.createDiv({ cls: 'sg-add-row' });
     this.termEl = row.createEl('input', { type: 'text', cls: 'sg-add-term', attr: { placeholder: 'Term', 'aria-label': 'Term', spellcheck: 'false' } });
     this.defEl = row.createEl('input', { type: 'text', cls: 'sg-add-def', attr: { placeholder: 'What it means', 'aria-label': 'What it means' } });
+    contentEl.createDiv({ cls: 'sg-add-hint', text: 'Start the term with ^ to match it in any case, such as ^socitm.' });
     this.msgEl = contentEl.createDiv({ cls: 'sg-add-message' });
     const buttons = contentEl.createDiv({ cls: 'modal-button-container' });
     buttons.createEl('button', { text: 'Cancel' }).addEventListener('click', () => this.close());
@@ -41,7 +42,7 @@ class SgAddTermModal extends Modal {
   }
 
   duplicate() {
-    const t = this.termEl.value.trim().toLowerCase();
+    const t = sgBareTerm(this.termEl.value.trim()).toLowerCase();
     const e = t && this.plugin.entries.find((x) => x.term.toLowerCase() === t);
     return e ? sgCheckEntry(e.term, '', [e]) : '';
   }

@@ -25,6 +25,7 @@ Here is a glossary note in Reading view:
 - Everything after it is the explanation. Hashtags are removed from it, so you can still tag entries.
 - The first web address in an entry, or the link on the term itself, appears in the tooltip as a clickable link.
 - Headings, ordinary paragraphs, tasks, code blocks and frontmatter are ignored.
+- Start a term with `^` to match it in any case, whatever the *Match case* setting: `- ^socitm: Society for Innovation, Technology and Modernisation` matches "socitm", "Socitm" and "SOCITM". The `^` isn't shown in the tooltip, and it works for bold and linked terms too (`**^socitm**`).
 - If a term is listed twice, the first entry is used.
 - The plugin rereads the glossary whenever you save it. If you rename or move the glossary note, the plugin follows it.
 
@@ -45,6 +46,7 @@ Run **Add a term to the glossary** from the command palette. To give it a hotkey
 
 - **Enter** saves and **Escape** cancels.
 - If you had text selected in a note, it's filled in as the term.
+- Start the term with `^` to have it match in any case.
 - If the term is already in the glossary, the window tells you and doesn't save it.
 
 The entry is added as `- TERM: what it means` to the glossary's list. That list is then sorted A–Z by the term alone, ignoring bold, links and upper or lower case. If your glossary has more than one list, for example under separate headings, each list is sorted on its own and the new term goes into the longest one. Lines indented under an entry move with it. Each list ends up with a single bullet style, and numbered lists are renumbered. If the glossary note doesn't exist yet, it is created.
@@ -56,7 +58,7 @@ The entry is added as `- TERM: what it means` to the glossary's list. That list 
 | Glossary note | The note to read terms from. Start typing to get a list of matching notes. |
 | Reading view / While editing | Choose where terms are marked. |
 | First use only | Mark only the first time each term appears in a note (on by default). |
-| Match case | "AR" does not match "ar" (on by default). |
+| Match case | "AR" does not match "ar" (on by default). A term written as `^term` always matches in any case. |
 | Plurals | Also match "BAs" and "AR's" (on by default). |
 | Look | Dotted underline, soft highlight, or both. |
 | Hover delay | How long to hover before the tooltip appears. |

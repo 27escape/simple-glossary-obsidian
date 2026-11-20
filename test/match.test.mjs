@@ -110,3 +110,32 @@ test('skipRanges can leave links out', () => {
   assert.equal(skipRanges('[[AR]] and [a](b)').length, 2);
   assert.equal(skipRanges('[[AR]] and [a](b)', { links: false }).length, 0);
 });
+
+test('^ terms match in any case, the others as written', () => {
+  const mx = buildMatcher([{ term: 'AR' }, { term: 'socitm', anyCase: true }, { term: 'Big Data', anyCase: true }]);
+  const text = 'Socitm, SOCITM, socitm and Socitms; BIG DATA and big data; AR not ar';
+  assert.deepEqual(
+    findTerms(text, mx).map((h) => [text.slice(h.from, h.to), h.term]),
+    [
+      ['Socitm', 'socitm'],
+      ['SOCITM', 'socitm'],
+      ['socitm', 'socitm'],
+      ['Socitms', 'socitm'],
+      ['BIG DATA', 'Big Data'],
+      ['big data', 'Big Data'],
+      ['AR', 'AR'],
+    ]
+  );
+  assert.deepEqual(linkTerms('[[SOCITM]] and [Socitm](x.md)', mx).map((h) => h.term), ['socitm', 'socitm']);
+});
+
+test('text written exactly as a term gets that entry before a ^ one', () => {
+  const mx = buildMatcher([{ term: 'Socitm', def: 'exact' }, { term: 'socitm', def: 'any', anyCase: true }]);
+  assert.equal(mx.entryOf('Socitm').def, 'exact');
+  assert.equal(mx.entryOf('SOCITM').def, 'any');
+});
+
+test('with Match case off, ^ makes no difference', () => {
+  const mx = buildMatcher([{ term: 'AR' }, { term: 'socitm', anyCase: true }], { caseSensitive: false });
+  assert.deepEqual(findTerms('ar SOCITM', mx).map((h) => h.term), ['AR', 'socitm']);
+});

@@ -59,3 +59,17 @@ test('cleans definitions', () => {
   assert.equal(sgCleanDef(' **bold** and `code`, ').def, 'bold and code');
   assert.equal(sgCleanDef('').def, '');
 });
+
+test('a term starting with ^ matches in any case; the ^ is not part of the term', () => {
+  const e = parseGlossary(['- ^socitm: Society for Innovation, Technology and Modernisation', '- **^Big Data**: large data sets', '- [[^SYMCA]]: South Yorkshire', '- ^ CI/CD: spaced', '- AR: Augmented Reality', '- ^: nothing'].join('\n'));
+  assert.deepEqual(
+    e.map((x) => [x.term, !!x.anyCase]),
+    [
+      ['socitm', true],
+      ['Big Data', true],
+      ['SYMCA', true],
+      ['CI/CD', true],
+      ['AR', false],
+    ]
+  );
+});

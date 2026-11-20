@@ -82,7 +82,7 @@ class SgSettingTab extends PluginSettingTab {
 
     new Setting(containerEl).setName('Matching').setHeading();
     toggle('First use only', 'Mark only the first time each term appears in a note.', 'firstOnly', redraw);
-    toggle('Match case', 'Match the term exactly as written in the glossary, so "AR" does not match "ar".', 'caseSensitive', rematch);
+    toggle('Match case', 'Match the term exactly as written in the glossary, so "AR" does not match "ar". A term written as ^term in the glossary always matches in any case.', 'caseSensitive', rematch);
     toggle('Plurals', 'Also match simple plurals such as "BAs" and "AR\'s".', 'plurals', rematch);
 
     new Setting(containerEl).setName('Appearance').setHeading();
