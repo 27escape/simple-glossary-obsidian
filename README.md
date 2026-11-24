@@ -47,6 +47,7 @@ Run **Add a term to the glossary** from the command palette. To give it a hotkey
 - **Enter** saves and **Escape** cancels.
 - If you had text selected in a note, it's filled in as the term.
 - Start the term with `^` to have it match in any case.
+- **Open glossary**, on the left below the boxes, closes the window and opens the glossary note in a new tab.
 - If the term is already in the glossary, the window shows what it already means, and saving adds another meaning straight after the existing ones. The window won't save a meaning the term already has.
 
 The entry is added as `- TERM: what it means` to the glossary's list. That list is then sorted A–Z by the term alone, ignoring bold, links and upper or lower case. If your glossary has more than one list, for example under separate headings, each list is sorted on its own and the new term goes into the longest one. Lines indented under an entry move with it. Each list ends up with a single bullet style, and numbered lists are renumbered. If the glossary note doesn't exist yet, it is created.

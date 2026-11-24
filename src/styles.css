@@ -136,6 +136,19 @@ body.sg-look-both .sg-term {
   font-size: var(--font-ui-smaller);
 }
 
+.sg-add-modal .modal-button-container .sg-add-open {
+  margin-right: auto; /* to the left, away from Cancel and Save */
+  align-self: center;
+  color: var(--text-accent);
+  font-size: var(--font-ui-small);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sg-add-modal .modal-button-container .sg-add-open:hover {
+  text-decoration: underline;
+}
+
 .sg-add-message {
   min-height: 1.5em;
   margin-top: var(--size-4-2);

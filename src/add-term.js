@@ -19,6 +19,18 @@ class SgAddTermModal extends Modal {
     contentEl.createDiv({ cls: 'sg-add-hint', text: 'Start the term with ^ to match it in any case, such as ^socitm.' });
     this.msgEl = contentEl.createDiv({ cls: 'sg-add-message' });
     const buttons = contentEl.createDiv({ cls: 'modal-button-container' });
+    // on the left: close this window and look at the glossary itself
+    const open = buttons.createEl('a', { cls: 'sg-add-open', text: 'Open glossary', attr: { role: 'button', tabindex: '0' } });
+    open.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.openGlossary();
+    });
+    open.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.openGlossary();
+      }
+    });
     buttons.createEl('button', { text: 'Cancel' }).addEventListener('click', () => this.close());
     buttons.createEl('button', { text: 'Save', cls: 'mod-cta' }).addEventListener('click', () => this.save());
 
@@ -39,6 +51,17 @@ class SgAddTermModal extends Modal {
 
   onClose() {
     this.contentEl.empty();
+  }
+
+  /** Close the window and open the glossary note in a new tab (or say why it can't). */
+  openGlossary() {
+    const file = this.plugin.glossaryFile();
+    if (!file) {
+      this.showProblem(this.plugin.settings.glossaryPath ? 'The glossary note doesn\'t exist yet: save a term to create it.' : 'Choose your glossary note in the settings first.');
+      return;
+    }
+    this.close();
+    this.app.workspace.getLeaf('tab').openFile(file, { active: true });
   }
 
   /** What the typed term already means, as a note (saving adds another meaning). */
