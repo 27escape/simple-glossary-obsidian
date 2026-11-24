@@ -31,7 +31,7 @@ function sgCleanDef(text) {
   return { def: s.trim(), url, tags };
 }
 
-/** Glossary note text → entries, in note order; the first entry for a term wins. */
+/** Glossary note text → entries, in note order. A term listed more than once has more than one meaning; only an exact repeat (same term and meaning) is dropped. */
 function parseGlossary(text) {
   const out = [];
   const seen = new Set();
@@ -63,11 +63,13 @@ function parseGlossary(text) {
       let term = m[fmt.term].replace(/[\s:]+$/, '').trim();
       const anyCase = term.startsWith('^');
       if (anyCase) term = term.slice(1).trim();
-      if (!term || seen.has(term)) break;
+      if (!term) break;
       const c = sgCleanDef(m[fmt.rest]);
+      const key = `${term}\n${c.def.toLowerCase()}`;
+      if (seen.has(key)) break;
       const link = fmt.url && /^https?:\/\//.test(m[fmt.url]) ? m[fmt.url] : '';
       out.push({ term, def: c.def, url: link || c.url, tags: c.tags, line: i, anyCase });
-      seen.add(term);
+      seen.add(key);
       break;
     }
   }

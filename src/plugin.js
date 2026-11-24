@@ -101,7 +101,8 @@ class SimpleGlossaryPlugin extends Plugin {
 
   setEntries(entries, status) {
     this.entries = entries;
-    this.byTerm = new Map(entries.map((e) => [e.term, e]));
+    this.byTerm = new Map(); // term → its first entry
+    for (const e of entries) if (!this.byTerm.has(e.term)) this.byTerm.set(e.term, e);
     this.status = status;
     this.rebuild();
     if (this.settingTab) this.settingTab.showStatus();
@@ -116,6 +117,11 @@ class SimpleGlossaryPlugin extends Plugin {
 
   entryFor(term) {
     return this.byTerm.get(term) || null;
+  }
+
+  /** Every meaning of a marked term, for the tooltip. */
+  meaningsFor(term) {
+    return sgMeanings(this.entries, term, this.settings.caseSensitive);
   }
 
   /** term → first line in this note's text (cached for the last note asked about). */

@@ -59,22 +59,38 @@ function sgBareTerm(term) {
   return String(term || '').replace(/^\^\s*/, '');
 }
 
-/** Problem with a new term (may start with ^) or description, or ''. */
+/** Entries that already have this term (ignoring capitals and ^), in glossary order. */
+function sgSameTerm(term, entries) {
+  const t = sgBareTerm(term).trim().toLowerCase();
+  return t ? (entries || []).filter((e) => e.term.toLowerCase() === t) : [];
+}
+
+const sgSameDef = (a, b) => a.toLowerCase().replace(/[\s.]+$/, '') === b.toLowerCase().replace(/[\s.]+$/, '');
+
+/** For the window: what the term already means, or '' if it is new. */
+function sgExistingNote(term, entries) {
+  const same = sgSameTerm(term, entries);
+  if (!same.length) return '';
+  return `${same[0].term} already means: ${same.map((e) => e.def || '(no description)').join('; ')}. Save to add another meaning.`;
+}
+
+/** Problem with a new term (may start with ^) or description, or ''. A known term with a new meaning is fine. */
 function sgCheckEntry(term, def, entries) {
   const bare = sgBareTerm(term);
   if (!bare) return 'Enter the term.';
   // the characters the plain "TERM: def" form can't hold (see SG_FORMATS in parse.js)
   if (/[:*_`[\]#|<>^]/.test(bare)) return 'A term can\'t contain : * _ ` [ ] # | < or >, or a ^ other than at the start.';
   if (bare.length + (bare === term ? 0 : 1) > 40) return 'A term can be 40 characters at most.';
-  const dup = (entries || []).find((e) => e.term.toLowerCase() === bare.toLowerCase());
-  if (dup) return `${dup.term} is already in the glossary${dup.def ? `: ${dup.def}` : ''}.`;
   if (!def) return 'Enter what it means.';
+  const dup = sgSameTerm(bare, entries).find((e) => sgSameDef(e.def || '', def));
+  if (dup) return `${dup.term} already has that meaning.`;
   return '';
 }
 
 /**
  * The glossary text with "term: def" added (term may start with ^: any case) and every run of entries sorted → { text } or { error }.
- * The new entry joins the longest run (the last, if two are as long); with no entries yet, a list starts at the end.
+ * The new entry joins the run its term is already in (another meaning goes straight after the ones there),
+ * otherwise the longest run (the last, if two are as long); with no entries yet, a list starts at the end.
  */
 function sgAddEntry(text, term, def) {
   text = String(text || '');
@@ -93,7 +109,9 @@ function sgAddEntry(text, term, def) {
     lines.push(`- ${entry}`, '');
     return { text: lines.join(eol) };
   }
-  const target = runs.reduce((a, r) => (r.blocks.length >= a.blocks.length ? r : a));
+  const known = sgSameTerm(term, entries)[0];
+  const home = known && runs.find((r) => known.line >= r.start && known.line < r.end);
+  const target = home || runs.reduce((a, r) => (r.blocks.length >= a.blocks.length ? r : a));
   target.blocks.push({ lines: [entry], term: sgBareTerm(term) }); // ^socitm sorts under S
   for (const r of runs.slice().reverse()) {
     // from the last run back, so earlier line numbers stay right

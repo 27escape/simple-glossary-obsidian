@@ -46,11 +46,15 @@ test('other entry forms', () => {
   );
 });
 
-test('ignores headings, prose, tasks, code blocks, frontmatter and duplicates', () => {
-  const text = ['---', 'tags:', '  - glossary', 'note: x', '---', '# Glossary', 'Some: prose', '- [ ] todo: later', '```', '- **X**: in code', '```', '- **AR**: first', '- **AR**: second', '- just a list item'].join('\n');
+test('ignores headings, prose, tasks, code blocks, frontmatter and exact repeats', () => {
+  const text = ['---', 'tags:', '  - glossary', 'note: x', '---', '# Glossary', 'Some: prose', '- [ ] todo: later', '```', '- **X**: in code', '```', '- **AR**: first', '- **AR**: second', '- AR: First.', '- AR: first', '- just a list item'].join('\n');
   assert.deepEqual(
-    parseGlossary(text).map((x) => [x.term, x.def]),
-    [['AR', 'first']]
+    parseGlossary(text).map((x) => [x.term, x.def, x.line]),
+    [
+      ['AR', 'first', 11],
+      ['AR', 'second', 12],
+      ['AR', 'First.', 13],
+    ]
   );
 });
 

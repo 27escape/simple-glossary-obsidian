@@ -60,32 +60,46 @@ class SgTooltip {
     this.target = null;
   }
 
+  /** One meaning: the term, what it means, its link. More: the term and "N meanings", then each one numbered. */
   show(termEl) {
-    const entry = this.plugin.entryFor(termEl.getAttribute('data-sg-term'));
-    if (!entry || !termEl.isConnected) return;
+    const meanings = this.plugin.meaningsFor(termEl.getAttribute('data-sg-term'));
+    if (!meanings.length || !termEl.isConnected) return;
     this.hide();
+    const many = meanings.length > 1;
     const tip = termEl.ownerDocument.body.createDiv({ cls: 'sg-tooltip' });
-    tip.createDiv({ cls: 'sg-tooltip-term', text: entry.term });
-    if (entry.def) tip.createDiv({ cls: 'sg-tooltip-def', text: entry.def });
+    const head = tip.createDiv({ cls: 'sg-tooltip-term', text: meanings[0].term });
+    if (many) head.createSpan({ cls: 'sg-tooltip-count', text: `${meanings.length} meanings` });
+    meanings.forEach((m, i) => {
+      let body = tip;
+      if (many) {
+        const row = tip.createDiv({ cls: 'sg-tooltip-meaning' });
+        row.createSpan({ cls: 'sg-tooltip-num', text: `${i + 1}.` });
+        body = row.createDiv({ cls: 'sg-tooltip-body' });
+      }
+      if (m.def) body.createDiv({ cls: 'sg-tooltip-def', text: m.def });
+      if (many && m.url) this.addUrl(body.createDiv({ cls: 'sg-tooltip-links' }), m.url);
+    });
     const links = tip.createDiv({ cls: 'sg-tooltip-links' });
-    if (entry.url) {
-      const a = links.createEl('a', { cls: 'sg-tooltip-url', text: sgShortUrl(entry.url), attr: { title: entry.url } });
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.hide();
-        window.open(entry.url); // Obsidian hands this to your web browser
-      });
-    }
+    if (!many && meanings[0].url) this.addUrl(links, meanings[0].url);
     const open = links.createEl('a', { cls: 'sg-tooltip-open', text: 'Open in glossary' });
     open.addEventListener('click', (e) => {
       e.preventDefault();
       this.hide();
-      this.plugin.openEntry(entry, e);
+      this.plugin.openEntry(meanings[0], e);
     });
     tip.addEventListener('mouseleave', (e) => !this.inside(e.relatedTarget) && this.scheduleHide());
     this.el = tip;
     this.target = termEl;
     this.place(tip, termEl);
+  }
+
+  addUrl(parent, url) {
+    const a = parent.createEl('a', { cls: 'sg-tooltip-url', text: sgShortUrl(url), attr: { title: url } });
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.hide();
+      window.open(url); // Obsidian hands this to your web browser
+    });
   }
 
   /** Below the term, or above it when there's no room; kept inside the window. */

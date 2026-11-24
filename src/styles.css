@@ -44,6 +44,42 @@ body.sg-look-both .sg-term {
   font-weight: var(--font-bold);
 }
 
+.sg-tooltip-count {
+  margin-left: var(--size-4-2);
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-normal);
+}
+
+/* more than one meaning: numbered, with a line between them */
+.sg-tooltip-meaning {
+  display: flex;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-2);
+}
+
+.sg-tooltip-meaning + .sg-tooltip-meaning {
+  padding-top: var(--size-4-2);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.sg-tooltip-num {
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.sg-tooltip-body {
+  min-width: 0;
+}
+
+.sg-tooltip-meaning .sg-tooltip-def {
+  margin-top: 0;
+}
+
+.sg-tooltip-body .sg-tooltip-links {
+  margin-top: var(--size-2-1);
+}
+
 .sg-tooltip-def {
   margin-top: var(--size-2-1);
   color: var(--text-muted);
@@ -105,4 +141,8 @@ body.sg-look-both .sg-term {
   margin-top: var(--size-4-2);
   color: var(--text-error);
   font-size: var(--font-ui-small);
+}
+
+.sg-add-message.sg-add-note {
+  color: var(--text-accent);
 }

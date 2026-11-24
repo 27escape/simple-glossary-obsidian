@@ -43,6 +43,16 @@ function buildMatcher(entries, opts = {}) {
 }
 
 /**
+ * Every meaning to show for a matched term (the .term of entryOf's entry), in glossary order: entries with that
+ * term, plus any-case (^) entries spelt the same in other capitals. A ^ entry's match doesn't pull in an entry
+ * that only matches its exact capitals, since the text may not be written that way.
+ */
+function sgMeanings(entries, term, caseSensitive = true) {
+  const t = String(term || '').toLowerCase();
+  return (entries || []).filter((e) => e.term === term || (e.term.toLowerCase() === t && (e.anyCase || !caseSensitive)));
+}
+
+/**
  * Matches in text → [{ from, to, term }] in order.
  * opts.skip: sorted [from, to] ranges to leave alone (see skipRanges)
  * opts.firstOnly: only the first match of each term (opts.seen carries that across calls)

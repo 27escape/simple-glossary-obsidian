@@ -30,10 +30,10 @@ class SgAddTermModal extends Modal {
     }; // Escape is the modal's own: it closes without saving
     this.termEl.addEventListener('keydown', onKey);
     this.defEl.addEventListener('keydown', onKey);
-    // say straight away when the term is already there
-    this.termEl.addEventListener('input', () => this.showProblem(this.duplicate()));
+    // say straight away what the term already means
+    this.termEl.addEventListener('input', () => this.showProblem(this.existing(), true));
     this.termEl.value = this.initial;
-    this.showProblem(this.duplicate());
+    this.showProblem(this.existing(), true);
     (this.initial ? this.defEl : this.termEl).focus();
   }
 
@@ -41,14 +41,14 @@ class SgAddTermModal extends Modal {
     this.contentEl.empty();
   }
 
-  duplicate() {
-    const t = sgBareTerm(this.termEl.value.trim()).toLowerCase();
-    const e = t && this.plugin.entries.find((x) => x.term.toLowerCase() === t);
-    return e ? sgCheckEntry(e.term, '', [e]) : '';
+  /** What the typed term already means, as a note (saving adds another meaning). */
+  existing() {
+    return sgExistingNote(this.termEl.value, this.plugin.entries);
   }
 
-  showProblem(text) {
+  showProblem(text, isNote) {
     this.msgEl.setText(text || '');
+    this.msgEl.toggleClass('sg-add-note', !!isNote);
   }
 
   async save() {
@@ -58,7 +58,7 @@ class SgAddTermModal extends Modal {
     const problem = sgCheckEntry(term, def, this.plugin.entries);
     if (problem) {
       this.showProblem(problem);
-      (problem === 'Enter what it means.' ? this.defEl : this.termEl).focus();
+      (problem === 'Enter what it means.' || problem.endsWith('already has that meaning.') ? this.defEl : this.termEl).focus();
       return;
     }
     this.busy = true;

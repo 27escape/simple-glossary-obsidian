@@ -71,9 +71,9 @@ test('spaces are tidied', () => {
   assert.deepEqual(add(['- **B**: b'], '  CI/CD ', ' Continuous   Integration \n and Delivery '), ['- **B**: b', '- CI/CD: Continuous Integration and Delivery']);
 });
 
-test('refuses duplicates (any case), empty fields and Markdown characters in the term', () => {
-  assert.match(add(['- **AR**: Augmented Reality'], 'ar', 'x').error, /^AR is already in the glossary: Augmented Reality\.$/);
-  assert.equal(add(['- GMCA: Greater Manchester'], 'GMCA', 'x').error, 'GMCA is already in the glossary: Greater Manchester.');
+test('refuses a meaning a term already has (any case), empty fields and Markdown characters in the term', () => {
+  assert.equal(add(['- **AR**: Augmented Reality'], 'ar', 'augmented reality.').error, 'AR already has that meaning.');
+  assert.equal(add(['- GMCA: Greater Manchester'], 'GMCA', 'Greater Manchester').error, 'GMCA already has that meaning.');
   assert.equal(sgCheckEntry('', 'x', []), 'Enter the term.');
   assert.equal(sgCheckEntry('AR', '', []), 'Enter what it means.');
   for (const t of ['A:B', '**A**', 'A[1]', '#A', 'A|B', '`A`', 'A_B', '<A>']) assert.match(sgCheckEntry(t, 'x', []), /can't contain/);
@@ -93,12 +93,27 @@ test('new entries are plain "TERM: def" and read back with the same term', () =>
 
 test('a ^ term is written with its ^, sorted without it, and checked for duplicates without it', () => {
   assert.deepEqual(add(['- RAID: risks', '- TA: Technical Architect'], '^ socitm', 'Society for Innovation'), ['- RAID: risks', '- ^socitm: Society for Innovation', '- TA: Technical Architect']);
-  assert.equal(add(['- Socitm: Society'], '^socitm', 'x').error, 'Socitm is already in the glossary: Society.');
-  assert.equal(add(['- ^socitm: Society'], 'SOCITM', 'x').error, 'socitm is already in the glossary: Society.');
+  assert.equal(add(['- Socitm: Society'], '^socitm', 'Society').error, 'Socitm already has that meaning.');
+  assert.equal(add(['- ^socitm: Society'], 'SOCITM', 'society').error, 'socitm already has that meaning.');
   assert.equal(sgCheckEntry('^', 'x', []), 'Enter the term.');
   assert.match(sgCheckEntry('A^B', 'x', []), /can't contain/);
   assert.equal(sgCheckEntry('^' + 'x'.repeat(40), 'y', []), 'A term can be 40 characters at most.');
   const { parseGlossary } = load(['parseGlossary']);
   const e = parseGlossary(sgAddEntry('', '^' + 'x'.repeat(39), 'y').text);
   assert.deepEqual([e[0].term.length, e[0].anyCase], [39, true]);
+});
+
+test('another meaning for a known term goes straight after the ones there, in their list', () => {
+  const before = ['## Business', '- PMO: Project Management Office', '- SLA: x', '', '## Tech', '- API: a', '- AR: b', '- LLM: c'];
+  assert.deepEqual(add(before, 'pmo', 'Portfolio Management Office'), ['## Business', '- PMO: Project Management Office', '- pmo: Portfolio Management Office', '- SLA: x', '', '## Tech', '- API: a', '- AR: b', '- LLM: c']);
+  assert.deepEqual(add(['- **AR**: Augmented Reality', '- BA: x'], 'AR', 'Annual Report'), ['- **AR**: Augmented Reality', '- AR: Annual Report', '- BA: x']);
+});
+
+test('the window says what a term already means', () => {
+  const { parseGlossary, sgExistingNote } = load(['parseGlossary', 'sgExistingNote']);
+  const entries = parseGlossary('- PMO: Project Management Office\n- ^pmo: Portfolio Management Office\n- AR: x');
+  assert.equal(sgExistingNote(' Pmo ', entries), 'PMO already means: Project Management Office; Portfolio Management Office. Save to add another meaning.');
+  assert.equal(sgExistingNote('^pmo', entries).startsWith('PMO already means'), true);
+  assert.equal(sgExistingNote('KPI', entries), '');
+  assert.equal(sgExistingNote('', entries), '');
 });

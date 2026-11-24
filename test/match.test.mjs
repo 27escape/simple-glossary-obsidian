@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { load } from './load.mjs';
 
-const { buildMatcher, findTerms, skipRanges, firstLines, linkTerms } = load(['buildMatcher', 'findTerms', 'skipRanges', 'firstLines', 'linkTerms']);
+const { buildMatcher, findTerms, skipRanges, firstLines, linkTerms, sgMeanings } = load(['buildMatcher', 'findTerms', 'skipRanges', 'firstLines', 'linkTerms', 'sgMeanings']);
 
 const entries = ['AR', 'AI', 'AIUI', 'BA', 'CI/CD', 'C++'].map((term, line) => ({ term, def: '', line }));
 const m = buildMatcher(entries);
@@ -138,4 +138,25 @@ test('text written exactly as a term gets that entry before a ^ one', () => {
 test('with Match case off, ^ makes no difference', () => {
   const mx = buildMatcher([{ term: 'AR' }, { term: 'socitm', anyCase: true }], { caseSensitive: false });
   assert.deepEqual(findTerms('ar SOCITM', mx).map((h) => h.term), ['AR', 'socitm']);
+});
+
+test('a term listed twice: both meanings, in glossary order', () => {
+  const entries = [
+    { term: 'PMO', def: 'Project Management Office' },
+    { term: 'AR', def: 'Augmented Reality' },
+    { term: 'PMO', def: 'Portfolio Management Office' },
+    { term: 'pmo', def: 'any-case meaning', anyCase: true },
+    { term: 'Pmo', def: 'only written Pmo' },
+  ];
+  const defs = (term, cs) => sgMeanings(entries, term, cs).map((e) => e.def);
+  const mx = buildMatcher(entries);
+  assert.equal(mx.entryOf('PMO').def, 'Project Management Office');
+  assert.deepEqual(defs('PMO'), ['Project Management Office', 'Portfolio Management Office', 'any-case meaning']);
+  // matched through the ^ entry ("pMo"): only meanings that match any capitals
+  assert.equal(mx.entryOf('pMo').term, 'pmo');
+  assert.deepEqual(defs('pmo'), ['any-case meaning']);
+  assert.deepEqual(defs('Pmo'), ['any-case meaning', 'only written Pmo']);
+  // Match case off: every spelling shares one tooltip
+  assert.deepEqual(defs('PMO', false).length, 4);
+  assert.deepEqual(defs('AR'), ['Augmented Reality']);
 });
