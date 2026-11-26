@@ -94,8 +94,10 @@ if [ "$HAS_MAIN" = 1 ] && [ "$BRANCH" != main ]; then
 fi
 echo "   release notes: $NOTES"
 echo "   unit tests…"
-node --test test/*.test.mjs >"$TMP/$ID-release-tests.txt" 2>&1 || { grep -E '^not ok|^# (pass|fail)' "$TMP/$ID-release-tests.txt"; fail "unit tests failed (all output: $TMP/$ID-release-tests.txt)"; }
-grep -E '^# (pass|fail)' "$TMP/$ID-release-tests.txt" | sed 's/^/   /'
+# the TAP reporter asked for by name: newer Node versions print a different summary by default, which grep then missed,
+# and with "set -e" a grep that finds nothing ended the script silently
+node --test --test-reporter=tap test/*.test.mjs >"$TMP/$ID-release-tests.txt" 2>&1 || { grep -E '^not ok|^# (pass|fail)' "$TMP/$ID-release-tests.txt" || true; fail "unit tests failed (all output: $TMP/$ID-release-tests.txt)"; }
+grep -E '^# (pass|fail)' "$TMP/$ID-release-tests.txt" | sed 's/^/   /' || echo "   passed (no summary found: see $TMP/$ID-release-tests.txt)"
 
 # ---- 2. the version
 if [ "$CURRENT" != "$VERSION" ]; then
