@@ -15,7 +15,6 @@ const SG_LOOKS = { underline: 'Dotted underline', highlight: 'Soft highlight', b
 
 class SimpleGlossaryPlugin extends Plugin {
   async onload() {
-    if (Platform.isMobile) return; // desktop only (isDesktopOnly in the manifest too)
     this.settings = Object.assign({}, SG_DEFAULTS, await this.loadData());
     this.entries = [];
     this.byTerm = new Map();
@@ -144,15 +143,20 @@ class SimpleGlossaryPlugin extends Plugin {
     for (const k of Object.keys(SG_LOOKS)) doc.body.toggleClass(`sg-look-${k}`, this.settings.look === k);
   }
 
-  /** Hover, click and look for the main window and each pop-out window. */
+  /** Hover and click (desktop) or tap (mobile), and the look, for the main window and each pop-out window. */
   watchDocument(doc) {
     if (!doc || this.docs.has(doc)) return;
     this.docs.add(doc);
     this.applyLook(doc);
-    this.registerDomEvent(doc, 'mouseover', (e) => this.tooltip.onOver(e));
-    this.registerDomEvent(doc, 'mouseout', (e) => this.tooltip.onOut(e));
-    this.registerDomEvent(doc, 'mousedown', (e) => this.onMouseDown(e), true);
-    this.registerDomEvent(doc, 'click', (e) => this.onClick(e));
+    if (Platform.isMobile) {
+      // no hover on a touchscreen: a tap shows the tooltip (see onTap in open.js)
+      this.registerDomEvent(doc, 'click', (e) => this.onTap(e));
+    } else {
+      this.registerDomEvent(doc, 'mouseover', (e) => this.tooltip.onOver(e));
+      this.registerDomEvent(doc, 'mouseout', (e) => this.tooltip.onOut(e));
+      this.registerDomEvent(doc, 'mousedown', (e) => this.onMouseDown(e), true);
+      this.registerDomEvent(doc, 'click', (e) => this.onClick(e));
+    }
     this.registerDomEvent(doc, 'keydown', (e) => e.key === 'Escape' && this.tooltip.hide());
     this.registerDomEvent(doc, 'scroll', (e) => this.tooltip.onScroll(e), true);
   }

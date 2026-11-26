@@ -78,7 +78,7 @@ class SgSettingTab extends PluginSettingTab {
 
     new Setting(containerEl).setName('Where').setHeading();
     toggle('Reading view', 'Mark terms in notes you are reading.', 'inReading', redraw);
-    toggle('While editing', 'Mark terms in Live Preview and Source mode. Ctrl-click (Cmd-click on a Mac) a term to open the glossary.', 'inEditor', redraw);
+    toggle('While editing', 'Mark terms in Live Preview and Source mode. On desktop, Ctrl-click (Cmd-click on a Mac) a term to open the glossary.', 'inEditor', redraw);
 
     new Setting(containerEl).setName('Matching').setHeading();
     toggle('First use only', 'Mark only the first time each term appears in a note.', 'firstOnly', redraw);
@@ -101,7 +101,7 @@ class SgSettingTab extends PluginSettingTab {
       );
     new Setting(containerEl)
       .setName('Hover delay')
-      .setDesc('How long, in milliseconds, to hover over a term before its explanation appears.')
+      .setDesc('How long, in milliseconds, to hover over a term before its explanation appears (desktop; on mobile a tap shows it straight away).')
       .addSlider((sl) =>
         sl
           .setLimits(0, 1000, 50)

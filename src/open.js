@@ -1,6 +1,7 @@
 // Clicking a term opens the glossary note at its entry.
 // Reading view: a plain click. Editor: Ctrl-click (Cmd-click on a Mac), since a plain click there places the cursor.
 // Terms that are links (.sg-link) keep the link's own click; the tooltip's "Open in glossary" still works.
+// Mobile: a tap shows the tooltip instead (onTap); "Open in glossary" in it opens the entry.
 
 Object.assign(SimpleGlossaryPlugin.prototype, {
   termAt(evt) {
@@ -15,6 +16,17 @@ Object.assign(SimpleGlossaryPlugin.prototype, {
     evt.stopPropagation();
     const entry = this.entryFor(term.getAttribute('data-sg-term'));
     if (entry) this.openEntry(entry);
+  },
+
+  /** Mobile: a tap on a term shows its tooltip, a second tap hides it; a tap anywhere else hides it. */
+  onTap(evt) {
+    const tip = this.tooltip;
+    if (tip.el && tip.el.contains(evt.target)) return; // the tooltip's own links
+    const term = this.termAt(evt);
+    if (!term || term.classList.contains('sg-link')) return tip.hide(); // a linked term still opens its note
+    if (!term.closest('.cm-editor')) evt.preventDefault(); // while editing, the tap still places the cursor
+    if (tip.target === term && tip.el) tip.hide();
+    else tip.show(term);
   },
 
   onClick(evt) {

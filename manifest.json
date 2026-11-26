@@ -6,5 +6,5 @@
   "description": "Marks terms from a glossary note wherever they appear in your notes and explains them in a tooltip when you hover over them.",
   "author": "Kevin Mulholland",
   "authorUrl": "https://github.com/27escape",
-  "isDesktopOnly": true
+  "isDesktopOnly": false
 }

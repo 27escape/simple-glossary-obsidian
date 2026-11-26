@@ -2,7 +2,7 @@
 // - the built main.js has no network, eval, shell, notifications or HTML strings
 // - only src/add-term.js writes notes (the glossary, when you add a term)
 // - every src/*.js file is in tools/files.json, and no file is too long
-// - the manifest says desktop only
+// - nothing that only works on desktop (Node or Electron modules), now that it runs on mobile too
 import fs from 'node:fs';
 
 const o = JSON.parse(fs.readFileSync('tools/files.json', 'utf8'));
@@ -38,7 +38,7 @@ for (const f of fs.readdirSync('src').filter((n) => n.endsWith('.js')).map((n) =
   if (lines > 500) problems.push(`${f}: ${lines} lines (cap 500)`);
   else if (lines > 400) warn.push(`${f}: ${lines} lines (target 400)`);
 }
-if (manifest.isDesktopOnly !== true) problems.push('manifest: isDesktopOnly must be true');
+if (manifest.isDesktopOnly !== false) problems.push('manifest: isDesktopOnly must be false (it runs on mobile)');
 
 for (const w of warn) console.log(`warning: ${w}`);
 for (const p of problems) console.log(`problem: ${p}`);

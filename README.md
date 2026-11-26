@@ -1,6 +1,6 @@
 # Simple Glossary
 
-An Obsidian plugin that reads your glossary note and marks those terms wherever they appear in your other notes. When you hover over a marked term, a tooltip explains it. It works on desktop only.
+An Obsidian plugin that reads your glossary note and marks those terms wherever they appear in your other notes. When you hover over a marked term, a tooltip explains it. It works on desktop and on mobile.
 
 ![Hovering over LLM in a note shows its meaning, its Wikipedia link and an Open in glossary link](docs/images/glossary-tooltip.png)
 
@@ -39,10 +39,11 @@ Here is a glossary note in Reading view:
 - Nothing else is marked in code, links, tags, web addresses, headings, frontmatter, comments or maths, or in the glossary note itself.
 - **Hover** over a marked term to see what it means. The tooltip stays open while your pointer is over it, so you can click its links.
 - **Click** a term in Reading view to open the glossary at that entry. While editing, Ctrl-click it (Cmd-click on a Mac), or use *Open in glossary* in the tooltip.
+- **On mobile**, tap a term to show its tooltip. Tap it again, or anywhere else, to close it. Use *Open in glossary* in the tooltip to go to the entry. A term written as a link still opens its note when tapped. While editing, the tap also places the cursor.
 
 ## Adding a term
 
-Run **Add a term to the glossary** from the command palette. To give it a hotkey, go to Settings → Hotkeys. A small window opens with a box for the term and a box for what it means:
+Run **Add a term to the glossary** from the command palette. To give it a hotkey, go to Settings → Hotkeys. On mobile, you can add it to the toolbar in Settings → Mobile. A small window opens with a box for the term and a box for what it means:
 
 - **Enter** saves and **Escape** cancels.
 - If you had text selected in a note, it's filled in as the term.
